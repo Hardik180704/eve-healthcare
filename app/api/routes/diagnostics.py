@@ -17,6 +17,17 @@ from app.schemas.diagnostic import (
     TestWithPrice,
 )
 
+
+def _test_with_price(centre_test: CentreTest) -> TestWithPrice:
+    return TestWithPrice(
+        id=centre_test.test.id,
+        code=centre_test.test.code,
+        name=centre_test.test.name,
+        description=centre_test.test.description,
+        price=centre_test.price,
+    )
+
+
 router = APIRouter(prefix="/diagnostics", tags=["diagnostics"])
 
 
@@ -60,16 +71,7 @@ def get_centre(
     centre_tests = db.scalars(
         select(CentreTest).where(CentreTest.centre_id == centre_id).order_by(CentreTest.test_id)
     ).all()
-    tests = [
-        TestWithPrice(
-            id=ct.test.id,
-            code=ct.test.code,
-            name=ct.test.name,
-            description=ct.test.description,
-            price=ct.price,
-        )
-        for ct in centre_tests
-    ]
+    tests = [_test_with_price(ct) for ct in centre_tests]
     return CentreWithTests(
         id=centre.id,
         name=centre.name,
@@ -111,13 +113,7 @@ def add_test_to_centre(
     db.add(centre_test)
     db.commit()
     db.refresh(centre_test)
-    return TestWithPrice(
-        id=test.id,
-        code=test.code,
-        name=test.name,
-        description=test.description,
-        price=centre_test.price,
-    )
+    return _test_with_price(centre_test)
 
 
 @router.get(
@@ -136,16 +132,7 @@ def list_centre_tests(
     centre_tests = db.scalars(
         select(CentreTest).where(CentreTest.centre_id == centre_id).order_by(CentreTest.test_id)
     ).all()
-    return [
-        TestWithPrice(
-            id=ct.test.id,
-            code=ct.test.code,
-            name=ct.test.name,
-            description=ct.test.description,
-            price=ct.price,
-        )
-        for ct in centre_tests
-    ]
+    return [_test_with_price(ct) for ct in centre_tests]
 
 
 # --- Diagnostic tests ---

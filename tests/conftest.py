@@ -20,7 +20,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import create_engine, text  # noqa: E402
 
 from alembic import command  # noqa: E402
-from app.core.database import Base, engine, get_db  # noqa: E402
+from app.core.database import engine, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 
 TRUNCATE_SQL = text(
@@ -117,7 +117,3 @@ def seed_centre_and_test(client: TestClient, headers: dict[str, str], price="500
     )
     assert link.status_code == 201, link.text
     return centre.json()["id"], test.json()["id"]
-
-
-# keep Base imported for Alembic autogenerate parity checks in future revisions
-_ = Base
