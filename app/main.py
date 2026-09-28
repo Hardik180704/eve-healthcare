@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.routes import auth, diagnostics, health
+from app.api.routes import auth, bookings, diagnostics, health
 from app.core.config import settings
 from app.core.exceptions import APIError
 from app.core.logging import setup_logging
@@ -19,6 +19,7 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(diagnostics.router)
+app.include_router(bookings.router)
 
 
 @app.exception_handler(APIError)
